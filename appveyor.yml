@@ -1,0 +1,38 @@
+image: ubuntu
+
+environment:
+  APPVEYOR_YML_DISABLE_PS_LINUX: "true"
+
+  MINIKUBE_VERSION: "0.27.0"
+  KUBECTL_VERSION: "1.9.6"
+  HELM_VERSION: "2.9.1"
+
+  KUBECONFIG: "/home/appveyor/.kube/config"
+  MINIKUBE_HOME: "/home/appveyor/kubernetes"
+  MINIKUBE_WANTUPDATENOTIFICATION: "false"
+  MINIKUBE_WANTREPORTERRORPROMPT: "false"
+  CHANGE_MINIKUBE_NONE_USER: "true"
+
+services:
+- docker
+
+install:
+  - sh: |
+      curl -Lo minikube https://storage.googleapis.com/minikube/releases/v${MINIKUBE_VERSION}/minikube-linux-amd64
+      chmod +x minikube
+      sudo mv minikube /usr/local/bin/.
+  - sh: |
+      curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl
+      chmod +x kubectl
+      sudo mv kubectl /usr/local/bin/.
+  - sh: |
+      curl https://storage.googleapis.com/kubernetes-helm/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar xz
+      chmod +x linux-amd64/helm
+      sudo mv linux-amd64/helm /usr/local/bin/.
+
+build_script:
+  - sh: sudo -E minikube start --vm-driver=none
+  - sh: helm init --wait
+
+test_script:
+  - sh: helm install stable/nginx-ingress
