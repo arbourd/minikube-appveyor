@@ -1,6 +1,7 @@
 image: ubuntu
 
 environment:
+  # Disables PowerShell in Linux builds
   APPVEYOR_YML_DISABLE_PS_LINUX: "true"
 
   MINIKUBE_VERSION: "0.27.0"
